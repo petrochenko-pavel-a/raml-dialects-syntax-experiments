@@ -1,0 +1,187 @@
+#%RAML Vocabulary 0.1
+uses:
+  raml-doc: ./raml-doc.raml
+classTerms:
+  Async:
+    description: >
+      The top level element of any RAML Async is the AsyncAPI node. It
+      introduces some meta-information about the API like the title, version and
+      description of the API.
+
+      It also holds the information of the Connection, global Bindings and the
+      EndPoints defined in the spec.
+    displayName: Async
+    properties:
+      - title
+      - version
+      - connection
+      - transport
+      - endpoints
+      - serialization
+      - bindings
+      - description
+    extends: raml-doc.RootDomainElement
+    syntax:
+      title:
+        mandatory: true
+      transport:
+        mandatory: true
+      endpoints:
+        declaration: true
+  Connection:
+    description: >
+      The `Connection` node contains global connection information that can be
+      used by clients to gain access to the API endpoints and use the async
+      operations interface.
+
+      It can be used to define a base identifier for the end points as well as
+      to set-up specific `Bindings` for the transport layer.
+
+      This node can also be used to define connection parameters to a 'messaging
+      broker' in the messaging systems that using this kind of functionality.
+    displayName: Connection
+    properties:
+      - host
+      - port
+      - scheme
+      - bindings
+    extends: raml-doc.DomainElement
+    syntax:
+      host:
+        mandatory: true
+      port:
+        mandatory: true
+      scheme:
+        mandatory: true
+  Endpoint:
+    description: >
+      Each of the discoverable communication units in the API with support for
+      the asynchronous interface are defined as EndPoint nodes.
+
+      EndPoints are defined by an identifier, the list of asynchronous
+      operations supported and an optional set of transport bindings.
+    displayName: End Point
+    properties:
+      - //
+      - parameters
+      - bindings
+      - description
+      - pattern
+    extends: raml-doc.DomainElement
+    syntax:
+      //:
+        mandatory: true
+      parameters:
+        mandatory: true
+        collection: true
+  AsyncOperation:
+    displayName: AsyncOperation
+    properties:
+      - message
+      - description
+      - name
+      - bindings
+      - pattern
+      - serialization
+    extends: raml-doc.DomainElement
+    syntax:
+      name:
+        mandatory: true
+  Parameter:
+    description: >-
+      Information about the replacement options that can be used in a parametric
+      EndPoint
+    displayName: Parameter
+    properties:
+      - schema
+      - name
+    extends: raml-doc.DomainElement
+    syntax:
+      name:
+        mandatory: true
+  Message:
+    description: Unit of data passed as the argument of an asyn operation
+    displayName: Message
+    properties:
+      - headers
+      - schema
+    extends: raml-doc.DomainElement
+    syntax:
+      headers:
+        mandatory: true
+        collection: true
+  Header:
+    description: Meta information for a message
+    displayName: Header
+    properties:
+      - mandatory
+      - name
+      - schema
+    syntax:
+      name:
+        mandatory: true
+  Bindings:
+    displayName: Bindings
+    properties:
+      - //
+    syntax:
+      //:
+        mandatory: true
+propertyTerms:
+  description:
+    displayName: description
+    range: string
+  name:
+    displayName: name
+    range: string
+  bindings:
+    displayName: bindings
+    range: Bindings
+  pattern:
+    displayName: pattern
+    range: string
+  schema:
+    displayName: schema
+    range: TypeDeclarationOrReference
+  serialization:
+    displayName: serialization
+    range: string
+  title:
+    displayName: title
+    range: string
+  version:
+    displayName: version
+    range: string
+  connection:
+    displayName: connection
+    range: Connection
+  transport:
+    displayName: transport
+    range: string
+  endpoints:
+    displayName: endpoints
+    range: Endpoint
+  host:
+    displayName: host
+    range: string
+  port:
+    displayName: port
+    range: integer
+  scheme:
+    displayName: scheme
+    range: string
+  //:
+    displayName: //
+    range: string
+  parameters:
+    displayName: parameters
+    range: Parameter
+  message:
+    displayName: message
+    range: Message
+  headers:
+    displayName: headers
+    range: Header
+  mandatory:
+    displayName: mandatory
+    range: boolean

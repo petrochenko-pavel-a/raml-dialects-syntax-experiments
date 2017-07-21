@@ -1,0 +1,28 @@
+#%RAML 1.0 Library
+annotationTypes:
+  reference: TypeName
+  declaration: nil
+types:
+  TypeExpression:
+    type: string
+  RootDomainElement:
+    type: object
+  DomainElement:
+    type: object
+  HasLibrariesAndTypes:
+    type: RootDomainElement
+    properties:
+      types:
+        properties:
+          //: TypeDeclarationOrReference
+      annotationTypes:
+        properties:
+          //: TypeDeclarationOrReference
+      uses:
+        properties:
+          //: string
+  TypeName:
+    type: string
+  TypeDeclarationOrReference: TypeExpression | TypeDeclaration | TypeExpression[]
+  TypeDeclaration:
+    properties:

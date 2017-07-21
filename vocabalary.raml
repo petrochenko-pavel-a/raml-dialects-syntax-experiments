@@ -1,0 +1,54 @@
+#%RAML 1.0 Library
+uses:
+  lc: ./libs/langCore.raml
+types:
+  ClassRef:
+    type: string
+    (lc.reference): Class
+  Builtin:
+    type: string
+    enum: [string, boolean, number, integer]
+  PropRef:
+    type: string
+    (lc.reference): Property
+  Property:
+    properties:
+      displayName?: string
+      description?: string
+      range?: ClassRef | Builtin
+      domain?: ClassRef
+      extends?: PropRef
+  SyntaxTerm:
+      properties:
+        term: string
+        collection?: boolean
+        declaration?: boolean
+        mandatory?: boolean
+        hash?: string
+  Class:
+    properties:
+      displayName?: string
+      description?: string
+      extends?:  ClassRef[]
+      syntax?:
+        properties:
+         //: SyntaxTerm | string
+      properties: PropRef[]
+  Vocabulary:
+    type: lc.RootDomainElement
+    properties:
+      usage?: string
+      dialect: string
+      version: string
+      base: string
+      external?:
+        properties:
+          //: string
+      propertyTerms?:
+        (lc.declaration):
+        properties:
+          //: Property[]
+      classTerms?:
+        (lc.declaration):
+        properties:
+          //: Class

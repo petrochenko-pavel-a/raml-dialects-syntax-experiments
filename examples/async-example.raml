@@ -1,0 +1,164 @@
+#%RAML Async 0.1
+
+title: Loan Async API
+version: 1.0
+description: Asynchronous API used to track changes in the loans processing pipeline.
+
+transport: amqp
+
+types:
+
+  MonetaryAmountData:
+    properties:
+      value: number
+      currency: string
+
+  LoanCreatedEvent:
+    properties:
+      uuid: string
+      loan_id: string
+      customer_id: string
+      amount: MonetaryAmountData
+      interest_rate: number
+      timestamp: datetime
+
+  LoanChangeEvent:
+    properties:
+      uuid: string
+      loan_id: string
+      timestamp: datetime
+      old_state:
+        enum:
+          - underwriting
+          - cancelled
+          - repayment
+          - closed
+          - failed
+      new_state:
+        enum:
+          - underwriting
+          - cancelled
+          - repayment
+          - closed
+          - failed
+
+  LoanRepaymentEvent:
+    properties:
+      uuid: string
+      customer_id: string
+      principal_repaid: MonetaryAmountData
+      interest_repaid: MonetaryAmountData
+      loan_id: string
+
+connection:
+  scheme: amqp
+  host: rabbit.myorg.com
+  port: 5672
+
+# default serialization
+serialization: application/json
+
+# global bindings
+bindings:
+  amqp_exchange: loans_exchange
+  amqp_exchange_type: topic
+
+endpoints:
+
+  /loans:
+    description: Subscribe to all loan events for all loans
+    subscribe:
+      message:
+        schema: LoanCreatedEvent
+    publish:
+      message:
+        schema: LoanCreatedEvent
+    bindings:
+      amqp_routing_key: "*.*"
+
+
+  /loans/{loan_id}:
+
+    description: Subscribe to all loan events for an existing loan
+    subscribe:
+      message:
+        schema: LoanChangeEvent
+    publish:
+      message:
+        schema: LoanChangeEvent
+    parameters:
+      - name: loan_id
+        schema: string
+      - name: o
+    bindings:
+      amqp_routing_key: "{loan_id}.*"
+
+  /loans/created:
+    pattern: event stream
+    description: Subscribe to all loan creation events
+    publish:
+      pattern: sink
+      message:
+        schema: LoanCreatedEvent[] | LoanChangeEvent
+    subscribe:
+      pattern: source
+      message:
+        schema: LoanCreatedEvent
+    bindings:
+      amqp_routing_key: "*.created"
+
+  /loans/underwritten:
+    description: Subscribe to all loan underwritten events
+    subscribe:
+      message:
+        schema: LoanChangeEvent
+    bindings:
+      amqp_routing_key: "*.underwritten"
+
+  /loans/cancelled:
+    description: Subscribe to all loan cancelation events
+    subscribe:
+      message:
+        schema: LoanChangeEvent
+    bindings:
+      amqp_routing_key: "*.cancelled"
+
+  /loans/repayments:
+    description: Subscribe to all loan repayments events for all loans
+    subscribe:
+      message:
+        schema: LoanRepaymentEvent
+    bindings:
+      amqp_exchange: repayments_exchange
+      amqp_routing_key: "*"
+
+  /loans/{loan_id}/repayments:
+    description: Subscribe to all repayments events for a particular loan
+    parameters:
+      - name: loan_id
+        schema: string
+    subscribe:
+      message:
+        schema: LoanRepaymentEvent[]
+    publish:
+      message:
+        schema: LoanRepaymentEvent
+    bindings:
+      amqp_exchange: repayments_exchange
+      amqp_routing_key: "{loan_id}"
+
+  /loans/failures:
+    description: Subscribe to all loan failed payments events for all loans
+    subscribe:
+      message:
+        schema: LoanChangeEvent
+    bindings:
+      amqp_routing_key: "*.failures"
+
+  /loans/closed:
+    description: Sbuscribe to all closed events for all loans
+    subscribe:
+      message:
+        schema: LoanChangeEvent
+    bindings:
+      amqp_routing_key: "*.closed"
