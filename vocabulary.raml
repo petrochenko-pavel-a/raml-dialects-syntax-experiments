@@ -7,17 +7,36 @@ types:
     (lc.reference): Class
   Builtin:
     type: string
-    enum: [string, boolean, number, integer]
+    enum: [string, boolean, number, integer, datetime]
   PropRef:
     type: string
     (lc.reference): Property
+  HasExample:
+    properties:
+        #Let it be strings for now
+        example:
+          type:  string
+          (lc.disjointWith): examples
+        examples: string []
   Property:
+    type: HasExample
     properties:
       displayName?: string
       description?: string
       range?: ClassRef | Builtin
       domain?: ClassRef
       extends?: PropRef
+      sameAs: PropRef[]
+      inverseOf?: PropRef
+      symmetric?: boolean
+      asymmetric?: boolean
+      disjointWith: PropRef | PropRef[]
+      reflexive?: boolean
+      irreflexive?: boolean
+      functional?: boolean
+      inverseFunctional?: boolean
+      transitive?: boolean
+      objectPropertyChain: PropRef[]
   SyntaxTerm:
       properties:
         term: string
@@ -26,6 +45,7 @@ types:
         mandatory?: boolean
         hash?: string
   Class:
+    type: HasExample
     properties:
       displayName?: string
       description?: string
@@ -47,7 +67,7 @@ types:
       propertyTerms?:
         (lc.declaration):
         properties:
-          //: Property[]
+          //: Property
       classTerms?:
         (lc.declaration):
         properties:
