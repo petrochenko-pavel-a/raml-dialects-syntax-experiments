@@ -21,6 +21,7 @@ external:
   shacl: "http://www.w3.org/ns/shacl#"
 
 classTerms:
+
   AsyncAPI:
     displayName: AsyncAPI
     description: |
@@ -70,7 +71,7 @@ classTerms:
       - port
       - scheme
       - bindings
-
+  shacl.Shape:
   EndPoint:
     displayName: End Point
     description: |
@@ -91,7 +92,9 @@ classTerms:
       operation:
         term: operation
         hash: schema-org.name
-
+  raml-doc.RootDomainElement:
+    extends: raml-doc.DomainElement
+  raml-doc.DomainElement:
   Parameter:
     displayName: Parameter
     description: Information about the replacement options that can be used in a parametric EndPoint
@@ -189,7 +192,8 @@ propertyTerms:
     displayName: endpoints
     description: EndPoints declared in the API
     range: EndPoint
-
+  properties:
+    range: shacl.Shape
   # Connection properties
 
   host:
